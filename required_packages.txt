@@ -2,4 +2,9 @@ pandas
 numpy
 plotly
 plotly-express
+<<<<<<< HEAD
 dash
+=======
+dash
+dash-bootstrap-components
+>>>>>>> dev_branch
