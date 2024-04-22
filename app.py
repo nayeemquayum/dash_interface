@@ -12,6 +12,7 @@ external_stylesheets =[dbc.themes.BOOTSTRAP]
 #Do data analysis
 #read the file
 patient_data=pd.read_csv('data/individualDetails.csv')
+#For row 1
 #count total number of patients
 total_patient_number = patient_data.id.count()
 #count number of recovered patients
@@ -20,7 +21,9 @@ recovered_patient_number = len(patient_data.query("current_status == 'Recovered'
 active_patient_number = len(patient_data.query("current_status == 'Hospitalized'"))
 #count number of deceased (dead) patients
 deceased_patient_number = len(patient_data.query("current_status == 'Deceased'"))
-
+#For row 3
+#compile list of patient status that can be used with the dropdown menu
+patient_status_list=patient_data.current_status.dropna().unique().tolist()
 #create the app
 app = dash.Dash(__name__,external_stylesheets=external_stylesheets)
 #add layout
@@ -79,10 +82,24 @@ app.layout=html.Div([
 	],className='row'),
 	#row 3
 	html.Div([
-				html.Div([dcc.Dropdown(id='patient_status',options=[],value='Montreal')
-					],className='col-md-12')
+				html.Div([dcc.Dropdown(id='patient_status',options=patient_status_list,value='Recovered'),
+						  dcc.Graph(id='patient_status_graph')
+				],className='col-md-12')
 			],className='row')#row 3 ends
 	],className='container')#container ends
+
+#based on the category we'll draw a bar graph for all the states
+#based on the category we'll draw a bar graph for all the states
+#create the dataframe
+@app.callback(Output('patient_status_graph','figure'),Input('patient_status','value'))
+def draw_status_graph(category):
+	df=patient_data[patient_data.current_status == category]
+	stat_df = df.groupby('detected_state')['current_status'].agg('count').reset_index()
+	trace_patient= go.Bar(x=stat_df.detected_state,y=stat_df.current_status)
+	data_patient=[trace_patient]
+	layout_patient=go.Layout(title='Patient status by State',xaxis={'title':'State'})
+	fig=go.Figure(data=data_patient,layout=layout_patient)
+	return fig
 
 if __name__ == "__main__":
     app.run_server(debug=True)
