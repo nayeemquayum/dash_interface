@@ -1,4 +1,4 @@
-#We''' do our data analysis here and them add them to the webpage
+#We do our data analysis here and them add them to the webpage
 #import required packages
 import pandas as pd
 import numpy as np
