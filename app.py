@@ -79,8 +79,8 @@ app.layout=html.Div([
 	],className='row'),
 	#row 3
 	html.Div([
-				html.Div([
-					html.H3("Row 3 Col 1",style={'color':'#FFFFFF','text-align':'center'})],className='col-md-12')
+				html.Div([dcc.Dropdown(id=,options=[],value='Montreal')
+					],className='col-md-12')
 			],className='row')#row 3 ends
 	],className='container')#container ends
 
