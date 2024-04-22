@@ -79,7 +79,7 @@ app.layout=html.Div([
 	],className='row'),
 	#row 3
 	html.Div([
-				html.Div([dcc.Dropdown(id=,options=[],value='Montreal')
+				html.Div([dcc.Dropdown(id='patient_status',options=[],value='Montreal')
 					],className='col-md-12')
 			],className='row')#row 3 ends
 	],className='container')#container ends
