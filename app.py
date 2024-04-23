@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
+import plotly_express as px
 import dash
 from dash import html
 from dash import dcc
@@ -24,6 +25,27 @@ deceased_patient_number = len(patient_data.query("current_status == 'Deceased'")
 #For row 3
 #compile list of patient status that can be used with the dropdown menu
 patient_status_list=patient_data.current_status.dropna().unique().tolist()
+#For row 2 column 1
+#Create a df to show patients diagnosed based on date
+diagnosys_df=patient_data.groupby('diagnosed_date')['id'].agg(sum).reset_index().sort_values('diagnosed_date',ascending=False)
+#create the graph
+#1. Create trace
+diagnosys_trace= go.Bar(x=diagnosys_df.diagnosed_date,y=diagnosys_df.id)
+#2. Add to data
+diagnosys_data=[diagnosys_trace]
+#3. Create layout
+#Setting barmode group,will draw two categoriesside by side.
+diagnosys_layout=go.Layout(title='Diagnosys by day',\
+                 xaxis={'title':'Day'},\
+                 yaxis={'title':'Count'}
+				 )
+#4. Create figure with layout and data(trace)
+diagnosys_fig=go.Figure(data=diagnosys_data,
+              layout=diagnosys_layout)
+#for row 2 column 2
+#Create a pie chart of patients based on state
+state_fig = px.pie(patient_data, values='id', names='detected_state',hole=0.25)
+state_fig.show()
 #create the app
 app = dash.Dash(__name__,external_stylesheets=external_stylesheets)
 #add layout
@@ -77,8 +99,22 @@ app.layout=html.Div([
 	],className='row'),
 	#row 2
 	html.Div([
-		html.Div([html.H3("Row 2 Col 1",style={'color':'#FFFFFF','text-align':'center'})],className='col-md-6'),
-		html.Div([html.H3("Row 2 Col 2",style={'color':'#FFFFFF','text-align':'center'})],className='col-md-6')
+		html.Div([
+			#card
+			html.Div([
+				#card-body
+				html.Div([dcc.Graph(id='diagnosys_fig',figure=diagnosys_fig)
+				],className='card-body')
+			],className='card')
+		],className='col-md-6'),	#row2 column 1 ends
+		html.Div([
+			#card
+			html.Div([
+				#card-body
+				html.Div([dcc.Graph(id='state_fig',figure=state_fig)
+				],className='card-body')
+			],className='card')
+		],className='col-md-6')		#row 2 column 2 ends
 	],className='row'),
 	#row 3
 	html.Div([
